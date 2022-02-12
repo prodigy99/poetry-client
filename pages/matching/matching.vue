@@ -8,9 +8,8 @@
 			<image class="avatar" :src="userInfo.avatar" mode=""></image>
 
 			<div class="userinfo">
-				<p>用户:{{userInfo.name}}</p>
+				<p>用户:{{userInfo.nickname}}</p>
 				<p>等级:{{userInfo.level}}</p>
-				<p>段位:{{userInfo.rank}}</p>
 			</div>
 		</div>
 	</view>

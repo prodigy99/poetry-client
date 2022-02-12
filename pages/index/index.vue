@@ -1,22 +1,16 @@
 <template>
 	<div class="container">
-
-		<!-- 签到按钮 -->
-		<div class="qd" @click="toSign">
-			<image :src="common.imageUrl+'qd.png'" mode="widthFix"></image>
-		</div>
-
-		<button class="login" open-type="getUserInfo" @getuserinfo="login" v-if="notLogin"></button>
+		<button class="login" open-type="getUserInfo" @getuserinfo="login" v-if="!isLogin"></button>
 		<image class="appbg" :src=" common.imageUrl+'appbg.png'" mode="aspectFill"></image>
 
 		<div class="user">
 			<image class="user_bg" :src=" common.imageUrl+'userbg.png' "></image>
-			<text class="name shadowFont">{{userInfo.name}}</text>
+			<text class="name shadowFont">{{userInfo.nickname}}</text>
 			<image class="avatar" :src="userInfo.avatar" mode=""></image>
 			<div class="level">
 				<text :key="menuKey">Lv.{{userInfo.level}}</text>
 				<div class="experience">
-					<div class="bar" :key="menuKey" :style="{'width':userInfo.exp}"></div>
+					<div class="bar" :key="menuKey" :style="{'width':userInfo.nextRankPercent}"></div>
 				</div>
 			</div>
 			<div class="gold">
@@ -94,36 +88,25 @@
 	import {
 		mapState,
 		mapActions,
-		mapMutations
+		mapMutations,
+		mapGetters
 	} from 'vuex'
 	import Vue from 'vue';
 	import axios from "../../utils/axios.js";
 	import common from "../../config/index.js";
-	
+	import api from "../../api/index.js";
+
 	export default {
 		data() {
 			return {
-				notLogin: true,
 				provider: '',
-				uid: '',
+				code: '',
 				common: common,
 				innerAudioContext: uni.createInnerAudioContext(),
 			}
 		},
 		onLoad() {
 			this.audioInit();
-
-			uni.getStorage({
-				key: 'day',
-				success: (data) => {
-					const day = new Date().getDate();
-					if (data.data != day) {
-						this.setSign(false);
-					} else {
-						this.setSign(true);
-					}
-				}
-			})
 		},
 		onShow() {
 			uni.getStorage({
@@ -132,71 +115,63 @@
 					this.audio.flag = data.data;
 				}
 			})
-			
+
 			if (this.audio.flag == 1) {
 				this.innerAudioContext.pause();
 			}
-			if (this.audio.Flag == 1)
-				if (this.userInfo.uid != '') {
-					this.updateUserInfo();
-				}
-
-
+			if (this.userInfo.uid != '') {
+				this.updateUserInfo();
+			}
 		},
 		mounted() {
-			
-			let that = this;
-
-			uni.getProvider({
-				service: "oauth",
-				success: (service) => {
-					that.provider = service.provider[0];
-					uni.login({
-						provider: that.provider,
-						success: function(loginRes) {
-							that.uid = loginRes.code;
-							uni.getUserInfo({
-								provider: that.provider,
-								success: (infoRes) => {
-									console.log(infoRes)
-									that.initUserInfo(infoRes.userInfo);
-									that.notLogin = false;
-								}
-							});
-						},
-					})
-				}
-			})
+			// 用户登录
+			this.login();
 		},
 
 		methods: {
-			...mapActions(["getUserInfo", "updateUserInfo"]),
-			...mapMutations(['setSign']),
-			// 这里初始化用户数据
+			...mapActions(["getUserInfoOrRegister", "updateUserInfo"]),
+			// 初始化声音播放模块
 			audioInit() {
-
 				this.innerAudioContext.autoplay = true;
 				this.innerAudioContext.src = common.musicUrl + 'gs.mp3';
-				this.innerAudioContext.onPlay(() => {
-					console.log('开始播放');
-				});
 				this.innerAudioContext.onEnded(() => {
 					let source = ["gs.mp3", "smmf.mp3", "fqh.mp3"];
 					this.audio.index++;
 					this.audio.index %= 3;
 					this.innerAudioContext.src = common.musicUrl + source[this.audio.index];
-					console.log(this.innerAudioContext.src);
 				});
 			},
-			initUserInfo(userInfo) {
+			login(){
+				uni.getProvider({
+					service: "oauth",
+					success: (service) => {
+						this.provider = service.provider[0]; // 1.先获得provider
+						uni.login({
+							provider: this.provider,
+							success: (loginRes) => {
+								// 2.获得code
+								let code = loginRes.code;
+								uni.getUserInfo({
+									provider: this.provider,
+									success: (infoRes) => {//3.获得用户的原始信息
+										this.initUserInfo(code,infoRes.userInfo);
+										this.notLogin = false;
+									}
+								});
+							},
+						})
+					}
+				})
+			},
+			// 获得用户信息,如果没有就注册
+			initUserInfo(code,rawUserInfo) {
 				uni.showLoading({
 					title: "获取用户信息",
 				})
-
-				this.getUserInfo({
-					uid: this.uid,
+				this.getUserInfoOrRegister({
+					code,
 					provider: this.provider,
-					nativeUserInfo: userInfo
+					rawUserInfo: rawUserInfo
 				}).then(
 					() => {
 						uni.hideLoading();
@@ -209,37 +184,21 @@
 				} else {
 					this.audio.flag = 0;
 				}
-
-
+				
 				uni.setStorage({
 					key: 'audio_flag',
 					data: this.audio.flag,
 				})
 			},
-			login(e) {
-				let that = this;
-				uni.getUserInfo({
-					provider: that.provider,
-					success: (infoRes) => {
-						that.initUserInfo(infoRes.userInfo);
-						console.log(infoRes);
-						that.notLogin = false;
-					}
-				});
-			},
 			gotoWhere(name) {
 				uni.navigateTo({
 					url: '/pages' + "/" + name + "/" + name,
 				});
-			},
-			toSign() {
-				this.setSign(true);
-				this.gotoWhere("sign")
 			}
-
 		},
 		computed: {
-			...mapState(["userInfo", "audio", "sign"]),
+			...mapState(["userInfo", "audio"]),
+			...mapGetters(["isLogin"]),
 			audio_flag() {
 				return this.audio.flag;
 			}

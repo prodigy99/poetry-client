@@ -1,7 +1,7 @@
 
-const baseUrl="http://127.0.0.1:8080/";
+const baseUrl="http://192.168.0.106:8080/";
 module.exports={
-	url:baseUrl,
+	baseUrl,
 	imageUrl:baseUrl+"image/",
 	musicUrl:baseUrl+"music/",
 }
