@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<image class="appbg" :src=" common.imageUrl + 'gamebg.jpg' "></image>
+		<image class="appbg" :src=" common.imageUrl + 'gamebg.png' "></image>
 		<div class="user">
 			<image class="avatar" :src="userInfo.avatar"></image>
 			<p>{{userInfo.name}}</p>
@@ -46,6 +46,8 @@
 	import common from "../../config/index.js"
 	import axios from "../../utils/axios.js";
 	import examCanvas from "../../components/examCanvas.vue";
+	import api from "../../api/index.js";
+	
 	export default {
 		components: {
 			examCanvas
@@ -67,7 +69,7 @@
 			}
 		},
 		onLoad() {
-
+			
 		},
 		computed: {
 			...mapState(["userInfo"])
@@ -170,14 +172,12 @@
 				})
 
 				const fill = async () => {
-					let result = await axios.get("question/getFillQuestion", {
-						number: 12
-					});
+					let result = (await api.puzzle.getCrosswordPuzzles(12)).data;
 					return result;
 				}
 
 				const quiz = async () => {
-					let result = await axios.get("question/getQuizQuestion");
+					let result = (await api.puzzle.getSingleTopicSelectionPuzzle()).data
 					return result;
 				}
 

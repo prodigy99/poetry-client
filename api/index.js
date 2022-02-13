@@ -65,8 +65,17 @@ const api = {
 	poetry: {
 		getPoetryByTitle: (title) => {
 			return get(`poetry/findPoetryByTitle/${title}`)
-		}
+		},
+		
 	},
+	puzzle:{
+		getSingleTopicSelectionPuzzle:() => {
+			return get(`puzzle/getSingleTopicSelectionPuzzle`)
+		},
+		getCrosswordPuzzles:(num) => {
+			return get(`puzzle/getCrosswordPuzzles/${num}`)
+		}
+	}
 }
 
 module.exports = api
