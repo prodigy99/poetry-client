@@ -45,12 +45,12 @@
 	} from 'vuex'
 	import common from "../../config/index.js"
 	import axios from "../../utils/axios.js";
-	import examCanvas from "../../components/examCanvas.vue";
+	// import examCanvas from "../../components/examCanvas.vue";
 	import api from "../../api/index.js";
 	
 	export default {
 		components: {
-			examCanvas
+			// examCanvas
 		},
 		data() {
 			return {
@@ -193,8 +193,7 @@
 				this.questions[this.questionIndex] = question;
 				this.$refs.exam.changeQuestion(this.questions[this.questionIndex]);
 				this.questionIndex += 1;
-				uni.hideLoading();
-				
+				uni.hideLoading();	
 			}
 		}
 	}

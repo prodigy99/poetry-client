@@ -26,6 +26,9 @@ const store = new Vuex.Store({
 	mutations: {
 		setUserInfo(state, userInfo) {
 			// todo
+			if(!!userInfo.uid){
+				api.setToken(userInfo.uid);// 设置token
+			}
 			state.userInfo = {
 				...userInfo,
 				nextRankPercent:((userInfo.nextRankPercent * 100) + "%"),

@@ -1,11 +1,11 @@
 import config from "../config/index.js"
  
-
 const get = (location) => {
 	return new Promise((resolve, reject) => {
 		uni.request({
 			url: config.baseUrl + location,
 			method: "GET",
+			header
 		}).then(res => {
 			console.log(`info --- GET [${location}] --- ${JSON.stringify(parseData(res[1].data))}`)
 			resolve(parseData(res[1].data))
@@ -22,7 +22,7 @@ const post = (location, data) => {
 			url: config.baseUrl + location,
 			method: "POST",
 			data,
-			header:{},
+			header,
 			dataType:"json"
 		}).then(res => {
 			console.log(`info --- POST [${location}] --- ${JSON.stringify(parseData(res[1].data))}`)
@@ -42,8 +42,11 @@ const parseData = (resData) => {
 	}
 }
 
-
+const header = {}
 const api = {
+	setToken:(token) => {
+		header.uid = token;
+	},
 	user: {
 		getUserInfo: (uid) => {
 			return get(`user/getUserInfo/${uid}`)
@@ -68,12 +71,12 @@ const api = {
 		},
 		
 	},
-	puzzle:{
-		getSingleTopicSelectionPuzzle:() => {
-			return get(`puzzle/getSingleTopicSelectionPuzzle`)
+	singleGame:{
+		getPuzzle:() => {
+			return get(`singleGame/getPuzzle`)
 		},
-		getCrosswordPuzzles:(num) => {
-			return get(`puzzle/getCrosswordPuzzles/${num}`)
+		submitAnswer:(pid,key) => {
+			return post('singleGame/submitAnswer',{pid,key})
 		}
 	}
 }

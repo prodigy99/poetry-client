@@ -49,15 +49,6 @@
 		props: ["mode"],
 		data() {
 			return {
-				// 0 代表题形1
-				// 1 代表题型2
-
-				// question:{
-				// 	mode:'0',
-				// 	title:'《静夜思》的作者是谁?',
-				// 	options:['李白','白居易','杜甫','苏轼'],
-				//  key:0
-				// },
 				common: common,
 				question: {
 					// mode: 1,

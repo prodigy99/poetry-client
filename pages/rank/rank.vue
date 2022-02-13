@@ -67,7 +67,7 @@
 
 <script>
 	import axios from "../../utils/axios.js";
-	import examCanvas from "../../components/examCanvas.vue";
+	// import examCanvas from "../../components/examCanvas.vue";
 	import common from "../../config/index.js"
 	import {
 		mapState,
@@ -76,7 +76,7 @@
 
 	export default {
 		components: {
-			examCanvas
+			// examCanvas
 		},
 		data() {
 			return {
