@@ -3,7 +3,7 @@ import config from "../config/index.js"
 const get = (location) => {
 	return new Promise((resolve, reject) => {
 		uni.request({
-			url: config.baseUrl + location,
+			url: config.httpUrl + location,
 			method: "GET",
 			header
 		}).then(res => {
@@ -19,7 +19,7 @@ const get = (location) => {
 const post = (location, data) => {
 	return new Promise((resolve, reject) => {
 		uni.request({
-			url: config.baseUrl + location,
+			url: config.httpUrl + location,
 			method: "POST",
 			data,
 			header,
@@ -69,7 +69,12 @@ const api = {
 		getPoetryByTitle: (title) => {
 			return get(`poetry/findPoetryByTitle/${title}`)
 		},
-		
+		pagination:(index,size) => {
+			return get(`poetry/pagination/${index}/${size}`)
+		},
+		findById:(id) => {
+			return get(`poetry/findById/${id}`)
+		}
 	},
 	singleGame:{
 		getPuzzle:() => {
@@ -78,7 +83,7 @@ const api = {
 		submitAnswer:(pid,key) => {
 			return post('singleGame/submitAnswer',{pid,key})
 		}
-	}
+	},
 }
 
 module.exports = api

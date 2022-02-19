@@ -1,15 +1,15 @@
 <template>
 	<view class="container">
-		<image class="appbg" :src="common.imageUrl+'gamebg.jpg'"></image>
+		<image class="appbg" :src="common.imageUrl+'gamebg.png'"></image>
 		<image class="decorate" :src="common.imageUrl+'crane.png'" mode="widthFix"></image>
 
 		<div class="wrapper">
 			<div>
 				<p>目录</p>
 			</div>
-			<scroll-view class="content" scroll-y="true">
-				<div class="item" v-for="(info,index) in contractInfo" :key="index" @click="showDetail(info.id,info._id)">
-					<p>{{info.title}}</p>
+			<scroll-view class="content" scroll-y="true" @scrolltolower="this.fetchData">
+				<div class="item" v-for="(poetry,index) in poetrys" :key="index" @click="showDetail(poetry.id)" >
+					<p>{{poetry.title}}</p>
 				</div>
 			</scroll-view>
 
@@ -22,32 +22,35 @@
 		mapState,
 		mapActions
 	} from 'vuex'
-	import axios from "../../utils/axios.js";
-	import store from "../../store/index.js";
+	import api from "../../api/index.js";
 	import common from "../../config/index.js"
+	const size = 15;
 	export default {
+		
 		data() {
 			return {
 				common:common,
-				contractInfo:[],
+				poetrys:[],
+				index:0
 			};
 		},
 		computed: {
 			...mapState(["userInfo"])
 		},
 		onShow() {
-			uni.showLoading({
-				title:"加载错题信息"
-			})
-			this.getContractMistake().then(uni.hideLoading);
+			
+			this.fetchData()
 		},
 		methods: {
-			async getContractMistake(){
-				this.contractInfo = await axios.get("mistake/getContractMistake",{uid:this.userInfo.uid});
-				console.log(this.contractInfo[0].weight);
-				this.contractInfo.sort(function(a,b){
-					  return b.weight-a.weight;
-				});
+			fetchData(){
+				uni.showLoading({
+					title:"加载中"
+				})
+				api.poetry.pagination(this.index,size).then(res => {
+					this.poetrys = [...this.poetrys,...res.data.poetry];
+					console.log(this.poetrys);
+					uni.hideLoading();
+				})
 			},
 			showDetail(id,_id){
 				uni.navigateTo({

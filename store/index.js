@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 import common from "../config/index.js";
 const api = require("../api/index.js")
-
+const webSocket = require("../api/webSocket.js")
 const store = new Vuex.Store({
 	state: {
 		userInfo: {
@@ -28,6 +28,7 @@ const store = new Vuex.Store({
 			// todo
 			if(!!userInfo.uid){
 				api.setToken(userInfo.uid);// 设置token
+				webSocket.setToken(userInfo.uid);
 			}
 			state.userInfo = {
 				...userInfo,

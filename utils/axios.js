@@ -1,12 +1,12 @@
 import common from "../config/index.js"
-const baseUrl = common.url;
+const httpUrl = common.url;
 
 module.exports = {
 	 async get(url,option){ 
 		 
 		return await new Promise((resolve, reject) => {
 			uni.request({
-				url: baseUrl + url,
+				url: httpUrl + url,
 				data:option,
 			}).then(
 				(res)=>{		

@@ -20,9 +20,9 @@
 		mapState,
 		mapActions
 	} from 'vuex'
-
-	import axios from "../../utils/axios.js";
 	import common from "../../config/index.js"
+	import webSocket from "../../api/webSocket.js";
+	
 	export default {
 		data() {
 			return {
@@ -38,23 +38,15 @@
 		},
 		onLoad() {
 			// 从服务器端获取对手信息
-			axios.get("fakedata/userAvatar").then(otherInfo => {
-				setTimeout(() => {
-					if(this.exit) return;
-					
-					uni.showToast({
-						title: "匹配成功"
-					})
-
-					setTimeout(() => {
-						uni.redirectTo({
-							url: `/pages/rank/rank?otherInfo=${encodeURIComponent(JSON.stringify(otherInfo))}`,
-						});
-						uni.hideToast();
-					}, 500);
-
-				}, 1000)
-			})
+			webSocket.setToken("weixinozOT-48RRSstWSCXQl7qMI-gfGTs");
+			setTimeout(() => {
+				webSocket.startMatch();
+				webSocket.onMatchSucess((data) => {
+					uni.navigateTo({
+						url:"/pages/multiplayerGames/multiplayerGames?otherUserInfo="+encodeURIComponent(JSON.stringify(data)),
+					});
+				})
+			},1000)
 		},
 		onUnload() {
 			this.exit = true;

@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<image class="appbg" :src="common.imageUrl+'gamebg.jpg'"></image>
+		<image class="appbg" :src="common.imageUrl+'gamebg.png'"></image>
 		<image class="decorate" :src="common.imageUrl+'crane.png'" mode="widthFix"></image>
 
 		<div class="wrapper">
@@ -11,12 +11,8 @@
 				<p class="title">{{poetryInfo.title}}</p>
 				<p class="auther">{{poetryInfo.writer}}</p>
 				<pre class="poetry" v-html="poetryInfo.content"></pre>
-
 				<pre class="other" v-for="(item,index) in poetryInfo.others" :key="index" v-html="item"> </pre>
 			</scroll-view>
-
-			<div class="button left" @click="addWeight">标重点</div>
-			<div class="button right" @click="removeMistake">已记住</div>
 		</div>
 	</view>
 </template>
@@ -26,79 +22,50 @@
 		mapState,
 		mapActions
 	} from 'vuex'
-	import axios from "../../utils/axios.js";
+	import api from "../../api/index.js";
 	import store from "../../store/index.js";
 	import common from "../../config/index.js"
 	export default {
 		data() {
 			return {
-				common:common,
+				common: common,
 				poetryInfo: {},
-				pid:"",
-				ud:"",
+				pid: "",
 			};
 		},
 		computed: {
 			...mapState(["userInfo"])
 		},
 		onLoad(options) {
-			uni.showLoading({
-				title:"加载中"
-			})
 			let id = options.id;
-			this.ud = options._id;
-			this.getMistake(id).then(uni.hideLoading);
+			this.getPoetry(id);
 		},
 		methods: {
-			async getMistake(id) {
-				this.poetryInfo = await axios.get("mistake/getMistake", {
-					id: id
-				});
-				
-				for(let sign of ['，','。','？','！','；']){
-					this.poetryInfo.content = this.poetryInfo.content.replace(new RegExp(sign,'g'), `${sign}<br/>`);
-				}
-				
-				let otherConstructor = (title,content) => {
-					return content != undefined ? `<h3><strong>${title}:</strong></h3> <br/>` + content : '';
-				}
-				
-				this.poetryInfo.others = [
-					otherConstructor("注释",this.poetryInfo.remark),
-					otherConstructor("翻译",this.poetryInfo.translation),
-					otherConstructor("赏析",this.poetryInfo.shangxi),
-				];
-				
-			},
-			async addWeight(){
-				let data ={
-					id:this.ud,
-				}
-				console.log("----");
-				await axios.get("mistake/setWeight",data);
-				uni.showToast({
-					title:"已标记",
-					icon:"none"
+			getPoetry(id) {
+				uni.showLoading({
+					title: "加载中"
 				})
-				setTimeout(() => {
-					uni.hideToast();
-				},1000)
-			},
-			async removeMistake(){
-				
-				let data ={
-					id:this.ud,
-				}
-				await axios.get("mistake/removeMistake",data);
-				uni.showToast({
-					title:"已删除",
-					icon:"none"
+				api.poetry.findById(id).then(res => {
+					uni.hideLoading();
+					this.poetryInfo = res.data;
+
+					for (let sign of ['，', '。', '？', '！', '；']) {
+						this.poetryInfo.content = this.poetryInfo.content.replace(new RegExp(sign, 'g'),
+							`${sign}<br/>`);
+					}
+
+					let otherConstructor = (title, content) => {
+						return content != undefined ? `<h3><strong>${title}:</strong></h3> <br/>` + content :
+							'';
+					}
+
+					this.poetryInfo.others = [
+						otherConstructor("注释", this.poetryInfo.remark),
+						otherConstructor("翻译", this.poetryInfo.translation),
+						otherConstructor("赏析", this.poetryInfo.shangxi),
+					];
 				})
-				setTimeout(() => {
-					uni.hideToast();
-					uni.navigateBack({});
-				},1000)
-			}
+			},
 		}
 	}
 </script>

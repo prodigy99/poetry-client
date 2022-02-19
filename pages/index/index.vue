@@ -31,7 +31,7 @@
 				<div class="col">
 					<div class="button item item_rank" @click="gotoWhere('matching')">
 						<p class="label shadowFont">对弈赛</p>
-						<image class="item_bg" :src=" common.imageUrl+'rank.png'"></image>
+						<image class="item_bg" :src=" common.imageUrl+'rank.png'" ></image>
 					</div>
 
 					<div class="button item item_sg" @click="gotoWhere('singleGame')">
@@ -63,13 +63,14 @@
 					</div>
 
 					<div class="row">
-						<div class="button item item_wrong" @click="gotoWhere('wrongList')">
-							<p class="label shadowFont">错题本</p>
-							<image class="item_bg" :src=" common.imageUrl+'wrong.png'"></image>
+						<div class="button item item_wrong" @click="gotoWhere('wrongList')" >
+							<p class="label shadowFont">诗词库</p>
+							<image class="item_bg" :src=" common.imageUrl+'wrong.png'" mode="scaleToFill"></image>
 						</div>
 
-						<div class="button item item_bank" @click="gotoWhere('shop')">
-							<p class="label shadowFont">钱庄</p>
+						<!-- todo -->
+						<div class="button item item_bank">
+							<p class="label shadowFont">商店</p>
 							<image class="item_bg" :src=" common.imageUrl+'bank.png'"></image>
 						</div>
 					</div>
