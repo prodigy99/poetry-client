@@ -63,6 +63,9 @@ const api = {
 		},
 		getOpenId: (code) => {
 			return get(`user/getWxOpenId/${code}`)
+		},
+		rankTop:() => {
+			return get(`user/rankTop`)
 		}
 	},
 	poetry: {

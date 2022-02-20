@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<image class="appbg" :src="common.imageUrl+'gamebg.jpg'"></image>
+		<image class="appbg" :src="common.imageUrl+'gamebg.png'"></image>
 
 		<scroll-view scroll-y="true" class="wrapper">
 			<!-- <div class="wrapper"> -->
@@ -9,8 +9,8 @@
 					<p class="index">{{index + 1}}</p>
 					<div class="userInfo">
 						<image class="avatar" :src="user.avatar"></image>
-						<p class="name">{{user.name}}</p>
-						<p class="accuracy">正确率:{{user.accuracy}}</p>
+						<p class="name">{{user.nickname}}</p>
+						<!-- <p class="accuracy">正确率:{{user.accuracy}}</p> -->
 						<div class="grade">等级:{{user.level}}</div>
 					</div>
 					<div class="gold">金币:{{user.gold}}</div>
@@ -29,66 +29,73 @@
 </template>
 
 <script>
-	import common from "../../config/index.js"
+	import common from "../../config/index.js";
+	import api from "../../api/index.js";
+	
 	export default {
 		data() {
 			return {
 				common:common,
 				userInfos: [
-					{
-						name: '董凤军',
-						avatar:"https://q.qlogo.cn/headimg_dl?dst_uin=99163267&spec=100",
-						accuracy: '82%',
-						level: '8',
-						gold: '200'
-					}, {
-						name: '刘善政  妈妈',
-						avatar :"https://q.qlogo.cn/headimg_dl?dst_uin=61368154&spec=100",
-						accuracy: '76%',
-						level: '5',
-						gold: '2000'
-					}, {
-						name: '四大名助',
-						avatar:"https://q.qlogo.cn/headimg_dl?dst_uin=3199614743&spec=100",
-						accuracy: '72%',
-						level: '4',
-						gold: '1340'
-					}, {
-						name: "/@菠萝蜜",
-						avatar: "https://q.qlogo.cn/headimg_dl?dst_uin=89175233&spec=100",
-						accuracy: '68%',
-						level: '11',
-						gold: '2240'
-					}, {
-						avatar: "https://q.qlogo.cn/headimg_dl?dst_uin=291911551&spec=100",
-						name: "在",
-						accuracy: '65%',
-						level: '10',
-						gold: '470'
-					}, {
-						avatar: "https://q.qlogo.cn/headimg_dl?dst_uin=391117911&spec=100",
-						name: "223",
-						accuracy: '63%',
-						level: '9',
-						gold: '160'
-					}, {
-						avatar: "https://q.qlogo.cn/headimg_dl?dst_uin=676282747&spec=100",
-						name: "张扬",
-						accuracy: '59%',
-						level: '12',
-						gold: '600'
-					},{
-						avatar: "https://q.qlogo.cn/headimg_dl?dst_uin=1264793995&spec=100",
-						name: "梦幻",
-						accuracy: '59%',
-						level: '9',
-						gold: '1470'
-					}
+					// {
+					// 	name: '董凤军',
+					// 	avatar:"https://q.qlogo.cn/headimg_dl?dst_uin=99163267&spec=100",
+					// 	accuracy: '82%',
+					// 	level: '8',
+					// 	gold: '200'
+					// }, {
+					// 	name: '刘善政  妈妈',
+					// 	avatar :"https://q.qlogo.cn/headimg_dl?dst_uin=61368154&spec=100",
+					// 	accuracy: '76%',
+					// 	level: '5',
+					// 	gold: '2000'
+					// }, {
+					// 	name: '四大名助',
+					// 	avatar:"https://q.qlogo.cn/headimg_dl?dst_uin=3199614743&spec=100",
+					// 	accuracy: '72%',
+					// 	level: '4',
+					// 	gold: '1340'
+					// }, {
+					// 	name: "/@菠萝蜜",
+					// 	avatar: "https://q.qlogo.cn/headimg_dl?dst_uin=89175233&spec=100",
+					// 	accuracy: '68%',
+					// 	level: '11',
+					// 	gold: '2240'
+					// }, {
+					// 	avatar: "https://q.qlogo.cn/headimg_dl?dst_uin=291911551&spec=100",
+					// 	name: "在",
+					// 	accuracy: '65%',
+					// 	level: '10',
+					// 	gold: '470'
+					// }, {
+					// 	avatar: "https://q.qlogo.cn/headimg_dl?dst_uin=391117911&spec=100",
+					// 	name: "223",
+					// 	accuracy: '63%',
+					// 	level: '9',
+					// 	gold: '160'
+					// }, {
+					// 	avatar: "https://q.qlogo.cn/headimg_dl?dst_uin=676282747&spec=100",
+					// 	name: "张扬",
+					// 	accuracy: '59%',
+					// 	level: '12',
+					// 	gold: '600'
+					// },{
+					// 	avatar: "https://q.qlogo.cn/headimg_dl?dst_uin=1264793995&spec=100",
+					// 	name: "梦幻",
+					// 	accuracy: '59%',
+					// 	level: '9',
+					// 	gold: '1470'
+					// }
 				]
 			}
 		},
 		methods: {
 
+		},
+		onLoad() {
+			api.user.rankTop().then(res => {
+				this.userInfos = res.data;
+			})
 		}
 	}
 </script>
