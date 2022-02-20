@@ -18,21 +18,22 @@ const store = new Vuex.Store({
 		audio: {
 			flag: 0,
 			index: Number(0),
-		}
+		},
+		openid:""
 	},
-	getters:{
-		isLogin:(state) => !!state.userInfo.uid //是否登录
+	getters: {
+		isLogin: (state) => !!state.userInfo.uid //是否登录
 	},
 	mutations: {
 		setUserInfo(state, userInfo) {
 			// todo
-			if(!!userInfo.uid){
-				api.setToken(userInfo.uid);// 设置token
+			if (!!userInfo.uid) {
+				api.setToken(userInfo.uid); // 设置token
 				webSocket.setToken(userInfo.uid);
 			}
 			state.userInfo = {
 				...userInfo,
-				nextRankPercent:((userInfo.nextRankPercent * 100) + "%"),
+				nextRankPercent: ((userInfo.nextRankPercent * 100) + "%"),
 			}
 		}
 	},
@@ -42,24 +43,29 @@ const store = new Vuex.Store({
 			let userInfo = (await api.user.getUserInfo(store.state.userInfo.uid)).data;
 			store.commit("setUserInfo", userInfo);
 		},
-		async getUserInfoOrRegister(store, {
+		async getUserInfo(store, {
 			code,
+			provider
+		}) {
+			//微信端 转换openid
+			if (provider == "weixin") {
+				this.openid = (await api.user.getOpenId(code)).data.openid;
+			}
+			let uid = provider + this.openid;
+			//模拟异步方法从服务器获取信息
+			let userInfo = (await api.user.getUserInfo(uid)).data;
+			if (userInfo) {
+				store.commit("setUserInfo", userInfo);
+			}
+
+		},
+		async userRegister(store, {
 			provider,
 			rawUserInfo
 		}) {
-			let openid;
-			//微信端 转换openid
-			if (provider == "weixin") {
-				openid = (await api.user.getOpenId(code)).data.openid;
-			}
-			let uid = provider + openid;
-			//模拟异步方法从服务器获取信息
-			let userInfo = (await api.user.getUserInfo(uid)).data;
-			if(!userInfo){
-				// 用户没有注册
-				// 直接注册用户
-				userInfo = (await api.user.register(uid,rawUserInfo.nickName,rawUserInfo.avatarUrl)).data;
-			}
+			let uid = provider + this.openid;
+			let userInfo = (await api.user.register(uid, rawUserInfo.nickName, rawUserInfo.avatarUrl)).data;
+			
 			store.commit("setUserInfo", userInfo);
 		}
 	}

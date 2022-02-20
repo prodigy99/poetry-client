@@ -52,9 +52,9 @@
 					uni.hideLoading();
 				})
 			},
-			showDetail(id,_id){
+			showDetail(id){
 				uni.navigateTo({
-					url:`/pages/wrongTopic/wrongTopic?id=${id}&_id=${_id}`
+					url:`/pages/poetryDetail/poetryDetail?id=${id}`
 				})
 			}
 		}
@@ -68,21 +68,21 @@
 		height: 100vh;
 		overflow: hidden;
 
-		&::before {
-			position: absolute;
-			display: block;
-			content: '';
-			left: 0;
-			top: 0;
+		// &::before {
+		// 	position: absolute;
+		// 	display: block;
+		// 	content: '';
+		// 	left: 0;
+		// 	top: 0;
 
-			width: 100%;
-			height: 5%;
+		// 	width: 100%;
+		// 	height: 5%;
 
-			background: linear-gradient(rgb(78, 132, 230), rgb(215, 131, 234));
-			border-radius: 62% 38% 50% 50% / 0% 0% 100% 100%;
-			opacity: .9;
-			z-index: 1;
-		}
+		// 	background: linear-gradient(rgb(78, 132, 230), rgb(215, 131, 234));
+		// 	border-radius: 62% 38% 50% 50% / 0% 0% 100% 100%;
+		// 	opacity: .9;
+		// 	z-index: 1;
+		// }
 
 
 		.appbg {

@@ -38,15 +38,17 @@
 		},
 		onLoad() {
 			// 从服务器端获取对手信息
-			webSocket.setToken("weixinozOT-48RRSstWSCXQl7qMI-gfGTs");
-			setTimeout(() => {
+			// setTimeout(() => {
 				webSocket.startMatch();
 				webSocket.onMatchSucess((data) => {
-					uni.navigateTo({
+					uni.showToast({
+						title:"匹配成功"
+					})
+					uni.redirectTo({
 						url:"/pages/multiplayerGames/multiplayerGames?otherUserInfo="+encodeURIComponent(JSON.stringify(data)),
 					});
 				})
-			},1000)
+			// },1000)
 		},
 		onUnload() {
 			this.exit = true;

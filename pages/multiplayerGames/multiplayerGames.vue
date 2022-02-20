@@ -5,7 +5,7 @@
 			<div class="userLeft">
 				<image class="bg" :src=" common.imageUrl+'bluebg.png'"></image>
 				<image class="user" :src="userInfo.avatar" mode=""></image>
-				<p>{{userInfo.name}}</p>
+				<p>{{userInfo.nickname}}</p>
 			</div>
 
 			<div class="time" v-if="!isShowFinal">
@@ -43,7 +43,7 @@
 				<p>{{score.otherScore}}</p>
 			</div>
 
-			<image v-if="score.meScore > score.otherScore" class="win" src="../../static/win.png" mode=""></image>
+			<image v-if="score.meScore > score.otherScore" class="win" :src="common.imageUrl+'win.png'" mode=""></image>
 
 			<div class="award">
 				<div class="item">
@@ -51,14 +51,14 @@
 					<p>{{result.award.gold}}</p>
 				</div>
 				<div class="item">
-					<image src="../../static/exp.png" mode="widthFix"></image>
+					<image :src="common.imageUrl+'exp.png'" mode="widthFix"></image>
 					<p>{{result.award.exp}}</p>
 				</div>
 			</div>
 
 			<div class="buttons">
-				<image class="button" src="../../static/again.jpg" mode="widthFix" @click="playAgain"></image>
-				<image class="button" src="../../static/exit.jpg" mode="widthFix" @click="exit"></image>
+				<image class="button" :src="common.imageUrl+'again.jpg'" mode="widthFix" @click="playAgain"></image>
+				<image class="button" :src="common.imageUrl+'exit.jpg'" mode="widthFix" @click="exit"></image>
 			</div>
 		</div>
 	</view>
@@ -68,6 +68,9 @@
 	import common from "../../config/index.js";
 	import newExamCanvas from "../../components/newExamCanvas.vue";
 	import webSocket from "../../api/webSocket.js";
+	import {
+		mapState,
+	} from 'vuex'
 	export default {
 		components: {
 			newExamCanvas
@@ -75,6 +78,9 @@
 		onLoad(option) {
 			let otherUserInfo = decodeURIComponent(option.otherUserInfo);
 			this.otherInfo = JSON.parse(otherUserInfo);
+		},
+		computed: {
+			...mapState(["userInfo"])
 		},
 		mounted() {
 			webSocket.ready();
@@ -121,7 +127,7 @@
 		data() {
 			return {
 				common,
-				isShowFinal: true,
+				isShowFinal: false,
 				otherInfo: {},
 				answerState: {
 					left: {},

@@ -1,6 +1,6 @@
 <template>
 	<div class="container">
-		<button class="login" open-type="getUserInfo" @getuserinfo="login" v-if="!isLogin"></button>
+		<button class="login" @click="register" v-if="!isLogin"></button>
 		<image class="appbg" :src=" common.imageUrl+'appbg.png'" mode="aspectFill"></image>
 
 		<div class="user">
@@ -31,7 +31,7 @@
 				<div class="col">
 					<div class="button item item_rank" @click="gotoWhere('matching')">
 						<p class="label shadowFont">对弈赛</p>
-						<image class="item_bg" :src=" common.imageUrl+'rank.png'" ></image>
+						<image class="item_bg" :src=" common.imageUrl+'rank.png'"></image>
 					</div>
 
 					<div class="button item item_sg" @click="gotoWhere('singleGame')">
@@ -63,7 +63,7 @@
 					</div>
 
 					<div class="row">
-						<div class="button item item_wrong" @click="gotoWhere('wrongList')" >
+						<div class="button item item_wrong" @click="gotoWhere('poetryList')">
 							<p class="label shadowFont">诗词库</p>
 							<image class="item_bg" :src=" common.imageUrl+'wrong.png'" mode="scaleToFill"></image>
 						</div>
@@ -93,7 +93,6 @@
 		mapGetters
 	} from 'vuex'
 	import Vue from 'vue';
-	import axios from "../../utils/axios.js";
 	import common from "../../config/index.js";
 	import api from "../../api/index.js";
 
@@ -104,6 +103,7 @@
 				code: '',
 				common: common,
 				innerAudioContext: uni.createInnerAudioContext(),
+				code: ""
 			}
 		},
 		onLoad() {
@@ -130,7 +130,7 @@
 		},
 
 		methods: {
-			...mapActions(["getUserInfoOrRegister", "updateUserInfo"]),
+			...mapActions(["getUserInfo", "updateUserInfo","userRegister"]),
 			// 初始化声音播放模块
 			audioInit() {
 				this.innerAudioContext.autoplay = true;
@@ -142,7 +142,16 @@
 					this.innerAudioContext.src = common.musicUrl + source[this.audio.index];
 				});
 			},
-			login(){
+			register() {
+				uni.getUserProfile({
+					desc: "注册账号",
+					success: (res) => {
+						let userInfo = res.userInfo
+						this.userRegister({code:this.code,provider:this.provider,rawUserInfo:userInfo})
+					}
+				})
+			},
+			login() {
 				uni.getProvider({
 					service: "oauth",
 					success: (service) => {
@@ -151,21 +160,15 @@
 							provider: this.provider,
 							success: (loginRes) => {
 								// 2.获得code
-								let code = loginRes.code;
-								uni.getUserInfo({
-									provider: this.provider,
-									success: (infoRes) => {//3.获得用户的原始信息
-										this.initUserInfo(code,infoRes.userInfo);
-										this.notLogin = false;
-									}
-								});
+								this.code = loginRes.code;
+								this.getUserInfo({code:this.code,provider:this.provider})
 							},
 						})
 					}
 				})
 			},
 			// 获得用户信息,如果没有就注册
-			initUserInfo(code,rawUserInfo) {
+			initUserInfo(code, rawUserInfo) {
 				uni.showLoading({
 					title: "获取用户信息",
 				})
@@ -185,7 +188,7 @@
 				} else {
 					this.audio.flag = 0;
 				}
-				
+
 				uni.setStorage({
 					key: 'audio_flag',
 					data: this.audio.flag,
